@@ -76,4 +76,26 @@ public class Controller {
             System.out.print("\n");
         }
     }
+
+    String makeChoice(int x, int y) {
+        if (!controllerModel.checkInputXY(x, y)) {
+            return "bad input (x||y) out of range";
+        }
+        if (controllerModel.getCellState(x, y)) {
+            return "bad input cell is opened";
+        }
+
+        if (controllerModel.getCellValue(x, y) == -1) {
+            return "there was a mine...";
+        } else {
+            controllerModel.setCellState(x, y, true);
+            printOpenedField();
+
+        }
+        return "";
+    }
+
+    String makeChoice() {//для графической поменять потом
+        return "b";
+    }
 }
