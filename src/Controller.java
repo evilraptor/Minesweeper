@@ -49,6 +49,26 @@ public class Controller {
         }
     }
 
+    void openCloseCells(int inputX, int inputY) {
+        if (controllerModel.getCellValue(inputX, inputY) != 0) {
+            return;
+        } else {
+            for (int i = 0; i < (fieldHeight + fieldWidth) / 2; i++) {
+                for (int tmpX = 0; tmpX < fieldWidth; tmpX++) {
+                    for (int tmpY = 0; tmpY < fieldHeight; tmpY++) {
+                        if (controllerModel.getCellState(tmpX, tmpY))
+                            for (int deltaX = -1; deltaX <= 1; deltaX++) {
+                                for (int deltaY = -1; deltaY <= 1; deltaY++) {
+                                    if (controllerModel.getCellValue(tmpX + deltaX, tmpY + deltaY) == 0)
+                                        controllerModel.setCellState(tmpX + deltaX, tmpY + deltaY, true);
+                                }
+                            }
+                    }
+                }
+            }
+        }
+    }
+
     void printFullyOpenedField() {
         for (int x = 0; x < fieldWidth; x++) {
             for (int y = 0; y < fieldHeight; y++) {
@@ -89,8 +109,8 @@ public class Controller {
             return "there was a mine...";
         } else {
             controllerModel.setCellState(x, y, true);
+            openCloseCells(x, y);
             printOpenedField();
-
         }
         return "";
     }

@@ -18,7 +18,7 @@ public class Model {
 
     boolean checkInputXY(int x, int y) {
         boolean flag = true;
-        if (((x >= fieldWidth) || (y >= fieldHeight))||((x >= fieldWidth) || (y >= fieldHeight))) flag = false;
+        if (((x >= fieldWidth) || (y >= fieldHeight)) || ((x < 0) || (y < 0))) flag = false;
         return flag;
 
     }
@@ -57,7 +57,7 @@ public class Model {
         return tmp;
     }
 
-    void setCellState(int x, int y,boolean f) {
+    void setCellState(int x, int y, boolean f) {
         if (checkInputXY(x, y)) {
             openedPlayingField[x][y] = f;
         }
