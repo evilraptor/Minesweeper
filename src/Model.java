@@ -1,28 +1,45 @@
 public class Model {
     private int[][] playingField;
+    private boolean[][] openedPlayingField;//false default
     private int fieldWidth;//ширина?
-    private int fieldLength;
+    private int fieldHeight;
 
     Model(int x, int y) {
         fieldWidth = x;
-        fieldLength = y;
-        playingField = new int[fieldWidth][fieldLength];
+        fieldHeight = y;
+        playingField = new int[fieldWidth][fieldHeight];
+        openedPlayingField = new boolean[fieldWidth][fieldWidth];
     }
 
     Model() {
         fieldWidth = 0;
-        fieldLength = 0;
+        fieldHeight = 0;
+    }
+
+    boolean checkInputXY(int x, int y) {
+        boolean flag = true;
+        if ((x >= fieldWidth) || (y >= fieldHeight)) flag = false;
+        return flag;
+
     }
 
     int getFieldWidth() {
         return fieldWidth;
     }
 
-    int getFieldLength() {
-        return fieldLength;
+    void setFieldWidth(int x) {
+        fieldWidth = x;
     }
 
-    void changeCellValue(int x, int y, int value) {
+    int getFieldHeight() {
+        return fieldHeight;
+    }
+
+    void setFieldHeight(int y) {
+        fieldHeight = y;
+    }
+
+    void setCellValue(int x, int y, int value) {
         try {
             playingField[x][y] = value;
         } catch (IndexOutOfBoundsException e) {
@@ -39,18 +56,17 @@ public class Model {
         }
         return tmp;
     }
-    void placeCountsOfCloseMines() {
-        for (int tmpX = 0; tmpX < fieldWidth; tmpX++) {
-            for (int tmpY = 0; tmpY < fieldLength; tmpY++) {
-                if (getCellValue(tmpX, tmpY) != -1) {
-                    int closeMinesCounter = 0;
-                    for (int deltaX = -1; deltaX <= 1; deltaX++) {
-                        for (int deltaY = -1; deltaY <= 1; deltaY++)
-                            if (getCellValue(tmpX + deltaX, tmpY + deltaY) == -1) closeMinesCounter++;
-                    }
-                    changeCellValue(tmpX,tmpY,closeMinesCounter);
-                }
-            }
+
+    void setFieldCellOpened(int x, int y) {
+        if (checkInputXY(x, y)) {
+            openedPlayingField[x][y] = true;
         }
+    }
+
+    boolean getCellState(int x, int y) {
+        if (checkInputXY(x, y)) {
+            return openedPlayingField[x][y];
+        } else
+            return false;
     }
 }
