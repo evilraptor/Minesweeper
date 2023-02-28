@@ -1,6 +1,7 @@
 public class Model {
     private int[][] playingField;
     private boolean[][] openedPlayingField;//false default
+    private boolean[][] flaggedCells;
     private int fieldWidth;//ширина?
     private int fieldHeight;
 
@@ -9,6 +10,7 @@ public class Model {
         fieldHeight = y;
         playingField = new int[fieldHeight][fieldWidth];
         openedPlayingField = new boolean[fieldHeight][fieldWidth];
+        flaggedCells = new boolean[fieldHeight][fieldWidth];
     }
 
     Model() {
@@ -17,10 +19,7 @@ public class Model {
     }
 
     boolean checkInputXY(int x, int y) {
-        boolean flag = true;
-        if (((x >= fieldWidth) || (y >= fieldHeight)) || ((x < 0) || (y < 0))) flag = false;
-        return flag;
-
+        return ((x < fieldWidth) && (y < fieldHeight)) && ((x >= 0) && (y >= 0));
     }
 
     int getFieldWidth() {
@@ -68,5 +67,13 @@ public class Model {
             return openedPlayingField[y][x];
         } else
             return false;
+    }
+
+    void setFlag(int x, int y, boolean mode) {
+        flaggedCells[y][x] = mode;
+    }
+
+    boolean getFlag(int x, int y) {
+        return flaggedCells[y][x];
     }
 }

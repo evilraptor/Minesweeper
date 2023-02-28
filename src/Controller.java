@@ -80,8 +80,8 @@ public class Controller {
                     if ((controllerModel.getCellValue(tmpX, tmpY) > 0) && (!controllerModel.getCellState(tmpX, tmpY))) {
                         for (int deltaY = -1; deltaY <= 1; deltaY++) {
                             for (int deltaX = -1; deltaX <= 1; deltaX++) {
-                                if ((controllerModel.getCellValue(tmpX + deltaX, tmpY + deltaY) == 0)&&(controllerModel.getCellState(tmpX + deltaX, tmpY + deltaY))){
-                                    controllerModel.setCellState(tmpX, tmpY,true);
+                                if ((controllerModel.getCellValue(tmpX + deltaX, tmpY + deltaY) == 0) && (controllerModel.getCellState(tmpX + deltaX, tmpY + deltaY))) {
+                                    controllerModel.setCellState(tmpX, tmpY, true);
                                 }
                             }
                         }
@@ -89,6 +89,12 @@ public class Controller {
                 }
             }
         }
+    }
+
+    void makeFlagOnFieldOpposite(int inputX, int inputY) {
+        if (controllerModel.getFlag(inputX, inputY)) controllerModel.setFlag(inputX, inputY, false);
+        else controllerModel.setFlag(inputX, inputY, true);
+        printOpenedField();
     }
 
     void printFullyOpenedField() {
@@ -111,6 +117,8 @@ public class Controller {
                     if (tmp != -1)
                         System.out.print(" " + tmp);
                     else System.out.print(" X");
+                } else if (controllerModel.getFlag(x, y)) {
+                    System.out.print(" ►");
                 } else {
                     System.out.print(" ?");//-48 -79
                 }
@@ -121,13 +129,15 @@ public class Controller {
 
     String makeChoice(int x, int y) {
         if (!controllerModel.checkInputXY(x, y)) {
+            System.out.println("bad input (x||y) out of range");
             return "bad input (x||y) out of range";
         }
         if (controllerModel.getCellState(x, y)) {
+            System.out.println("bad input cell is opened");
             return "bad input cell is opened";
         }
-
         if (controllerModel.getCellValue(x, y) == -1) {
+            System.out.println("there was a mine...");
             return "there was a mine...";
         } else {
             controllerModel.setCellState(x, y, true);
