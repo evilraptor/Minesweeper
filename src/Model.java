@@ -7,8 +7,8 @@ public class Model {
     Model(int x, int y) {
         fieldWidth = x;
         fieldHeight = y;
-        playingField = new int[fieldWidth][fieldHeight];
-        openedPlayingField = new boolean[fieldWidth][fieldWidth];
+        playingField = new int[fieldHeight][fieldWidth];
+        openedPlayingField = new boolean[fieldHeight][fieldWidth];
     }
 
     Model() {
@@ -41,7 +41,7 @@ public class Model {
 
     void setCellValue(int x, int y, int value) {
         try {
-            playingField[x][y] = value;
+            playingField[y][x] = value;
         } catch (IndexOutOfBoundsException e) {
             System.out.println(e.getMessage());
         }
@@ -50,7 +50,7 @@ public class Model {
     int getCellValue(int x, int y) {
         int tmp;
         try {
-            tmp = playingField[x][y];
+            tmp = playingField[y][x];//первые скобки берем какая строка т.е. у и тд
         } catch (IndexOutOfBoundsException e) {
             tmp = 0;//поменять значение при выходе за массив
         }
@@ -59,13 +59,13 @@ public class Model {
 
     void setCellState(int x, int y, boolean f) {
         if (checkInputXY(x, y)) {
-            openedPlayingField[x][y] = f;
+            openedPlayingField[y][x] = f;
         }
     }
 
     boolean getCellState(int x, int y) {
         if (checkInputXY(x, y)) {
-            return openedPlayingField[x][y];
+            return openedPlayingField[y][x];
         } else
             return false;
     }
