@@ -22,6 +22,7 @@ public class Controller {
         fieldHeight = Integer.parseInt(input[1]);//in.nextInt();
         countOfMines = 0;
         controllerModel = new Model(fieldWidth, fieldHeight);
+        //in.close();
     }
 
     boolean checkIsGameEnded() {
@@ -29,14 +30,16 @@ public class Controller {
         else return false;
     }
 
+    int getFlagsCount() {
+        return controllerModel.getMinesCount();
+    }
+
     void setModel(Model inputModel) {
         controllerModel = inputModel;
     }
 
     boolean checkIsAllMinesOpened() {
-        if (controllerModel.getOpenedMinesCount() != controllerModel.getMinesCount())
-            return false;
-        else return true;
+        return controllerModel.getOpenedMinesCount() == controllerModel.getMinesCount();
     }
 
     boolean checkIsAllFieldOpened() {
@@ -49,6 +52,7 @@ public class Controller {
     }
 
     void placeMinesOnField(int countOfMines) {
+        controllerModel.setMinesCount(countOfMines);
         int mineValue = -1;
         for (int i = 0; i < countOfMines; ) {
             int mineXCoordinate = (int) (Math.random() * controllerModel.getFieldWidth());//fieldWidth
@@ -179,8 +183,8 @@ public class Controller {
             return "bad input cell is opened";
         }
         if (controllerModel.getCellValue(x, y) == -1) {
-            System.out.println("there was a mine...");
-            return "there was a mine...";
+            System.out.println("there was a mine...\nGame over");
+            return "Game over";
         } else {
             controllerModel.setCellState(x, y, true);
             openCloseCells(x, y);
@@ -191,5 +195,5 @@ public class Controller {
 
     String openCell() {//для графической поменять потом
         return "b";
-    }
+    }//для графики наверное
 }
