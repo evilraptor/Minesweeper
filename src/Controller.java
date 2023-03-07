@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Controller {
     private int fieldWidth;//ширина?
     private int fieldHeight;
@@ -8,16 +10,42 @@ public class Controller {
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
         countOfMines = 0;
-        controllerModel = new Model(xInputValue, yInputValue);
+        controllerModel = new Model(fieldWidth,fieldHeight);
     }
 
     Controller() {
+        System.out.println("enter x and y values of the field...");
+        Scanner in = new Scanner(System.in);
+        String tmp = in.nextLine();
+        String[] input = tmp.split(" ");
+        fieldWidth = Integer.parseInt(input[0]);//in.nextInt();
+        fieldHeight = Integer.parseInt(input[1]);//in.nextInt();
         countOfMines = 0;
-        controllerModel = new Model();
+        controllerModel = new Model(fieldWidth,fieldHeight);
+    }
+
+    boolean checkIsGameEnded() {
+        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) return true;
+        else return false;
     }
 
     void setModel(Model inputModel) {
         controllerModel = inputModel;
+    }
+
+    boolean checkIsAllMinesOpened() {
+        if (controllerModel.getOpenedMinesCount() != controllerModel.getMinesCount())
+            return false;
+        else return true;
+    }
+
+    boolean checkIsAllFieldOpened() {
+        for (int i = 0; i < fieldWidth; i++) {
+            for (int j = 0; j < fieldHeight; j++) {
+                if ((controllerModel.getCellValue(i, j) != -1) && (!controllerModel.getCellState(i, j))) return false;
+            }
+        }
+        return true;
     }
 
     void placeMinesOnField(int countOfMines) {
@@ -32,6 +60,16 @@ public class Controller {
             }
         }
         placeCountsOfCloseMines();
+        int generationMinesCount = 0;
+        for (int i = 0; i < fieldWidth; i++) {
+            for (int j = 0; j < fieldHeight; j++) {
+                if (controllerModel.getCellValue(i, j) == -1) generationMinesCount++;
+            }
+        }
+        if (generationMinesCount != controllerModel.getMinesCount()) {
+            System.out.println("wrong generation. Trying again...");
+            placeMinesOnField(countOfMines);
+        }
     }
 
     void placeCountsOfCloseMines() {

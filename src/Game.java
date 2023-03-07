@@ -45,7 +45,7 @@ public class Game {
         System.out.println("enter count of mines...");
         countOfMines = in.nextInt();
         gameController.placeMinesOnField(countOfMines);
-            gameController.printFullyOpenedField();/////////
+        gameController.printFullyOpenedField();/////////
         gameController.printOpenedField();
         //in.close();
     }
@@ -86,7 +86,8 @@ public class Game {
         return 0;
     }//-1 exit 0 okk 1 new game
 
-    void startNewGame() {
+    Controller startNewGame() {
+        return new Controller();
     }
 
 

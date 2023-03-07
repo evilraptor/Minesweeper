@@ -4,6 +4,8 @@ public class Model {
     private boolean[][] flaggedCells;
     private int fieldWidth;//ширина?
     private int fieldHeight;
+    private int minesCount = 0;
+    private int openedMinesCount = 0;
 
     Model(int x, int y) {
         fieldWidth = x;
@@ -16,6 +18,22 @@ public class Model {
     Model() {
         fieldWidth = 0;
         fieldHeight = 0;
+    }
+
+    void setOpenedMinesCount(int input) {
+        openedMinesCount = input;
+    }
+
+    int getOpenedMinesCount() {
+        return openedMinesCount;
+    }
+
+    void setMinesCount(int inputMinesCount) {
+        minesCount = inputMinesCount;
+    }
+
+    int getMinesCount() {
+        return minesCount;
     }
 
     boolean checkInputXY(int x, int y) {
