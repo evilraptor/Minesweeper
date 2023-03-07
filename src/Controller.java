@@ -2,15 +2,15 @@ import java.util.Scanner;
 
 public class Controller {
     private int fieldWidth;//ширина?
-    private int fieldHeight;
+    private int fieldHeight = 0;
     private Model controllerModel;
-    private int countOfMines;
+    private int countOfMines = 0;
 
     Controller(int xInputValue, int yInputValue) {
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
         countOfMines = 0;
-        controllerModel = new Model(fieldWidth,fieldHeight);
+        controllerModel = new Model(fieldWidth, fieldHeight);
     }
 
     Controller() {
@@ -21,7 +21,7 @@ public class Controller {
         fieldWidth = Integer.parseInt(input[0]);//in.nextInt();
         fieldHeight = Integer.parseInt(input[1]);//in.nextInt();
         countOfMines = 0;
-        controllerModel = new Model(fieldWidth,fieldHeight);
+        controllerModel = new Model(fieldWidth, fieldHeight);
     }
 
     boolean checkIsGameEnded() {
@@ -165,13 +165,17 @@ public class Controller {
         }
     }
 
-    String makeChoice(int x, int y) {
+    /**
+     * @apiNote output:1)"bad input (x||y) out of range"/2)"bad input cell is already opened"/3)"there was a mine...",4)"Ok".
+     * (1)checkInputXY(x, y); (2)getCellState(x, y); (3)getCellValue(x, y) == -1; (4)setCellState(x, y, true)...else return "Ok";
+     */
+    String openCell(int x, int y) {
         if (!controllerModel.checkInputXY(x, y)) {
             System.out.println("bad input (x||y) out of range");
             return "bad input (x||y) out of range";
         }
         if (controllerModel.getCellState(x, y)) {
-            System.out.println("bad input cell is opened");
+            System.out.println("bad input cell is already opened");
             return "bad input cell is opened";
         }
         if (controllerModel.getCellValue(x, y) == -1) {
@@ -181,11 +185,11 @@ public class Controller {
             controllerModel.setCellState(x, y, true);
             openCloseCells(x, y);
             printOpenedField();
+            return "Ok";
         }
-        return "";
     }
 
-    String makeChoice() {//для графической поменять потом
+    String openCell() {//для графической поменять потом
         return "b";
     }
 }

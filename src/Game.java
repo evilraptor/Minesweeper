@@ -73,11 +73,11 @@ public class Game {
             int tmpX = Integer.parseInt(input[0]);//in.nextInt();
             int tmpY = Integer.parseInt(input[1]);//in.nextInt();
             if (!puttingFlagMode) {
-                tmp = gameController.makeChoice(tmpX, tmpY);
+                tmp = gameController.openCell(tmpX, tmpY);
             } else {
                 gameController.makeFlagOnFieldOpposite(tmpX, tmpY);
             }
-            if ((tmp.equals("game if over")) || (tmp.equals("you won"))) {
+            if ((tmp.equals("game if over")) || (gameController.checkIsGameEnded())) {
                 break;
             }
             //System.out.println(tmp);
