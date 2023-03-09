@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class Game {
     private Controller gameController;
     private int countOfMines;
+    boolean puttingFlagMode = false;
 
     int checkForCommand(String input) {//Exit, About, New Game, High Scores.
         switch (input) {
@@ -16,6 +17,7 @@ public class Game {
                 return 0;
             }
             case "New Game" -> {
+                startNewGame();
                 return 1;
             }
             case "High Scores" -> {
@@ -42,9 +44,9 @@ public class Game {
         System.out.println("enter x and y values of the field...");
         int xInputValue = in.nextInt();
         int yInputValue = in.nextInt();
-        gameController = new Controller(xInputValue, yInputValue);
         System.out.println("enter count of mines...");
         countOfMines = in.nextInt();
+        gameController = new Controller(xInputValue, yInputValue, countOfMines);
         gameController.placeMinesOnField(countOfMines);
         gameController.printFullyOpenedField();/////////
         gameController.printOpenedField();
@@ -52,37 +54,47 @@ public class Game {
     }
 
     int gameCycle() {
-        boolean puttingFlagMode = false;
         int flagCount = gameController.getFlagsCount();
 
         while (true) {
             System.out.println("\nCount of mines: " + flagCount);
-            String[] input = getCycleInput(puttingFlagMode);
-
-            int flag = checkForCommand(input[input.length - 1]);
-            if (flag != 0) return flag;
+            String[] input = new String[1];
+            int flag;
+            while (input.length == 1) {
+                input = getCycleInput(puttingFlagMode);
+                flag = checkForCommand(input[input.length - 1]);
+                if (flag != 0) return flag;
+            }
 
             String tmp = Arrays.toString(input);
+            /////написать про смену режима
             int tmpX = Integer.parseInt(input[0]);//in.nextInt();
             int tmpY = Integer.parseInt(input[1]);//in.nextInt();
             if (!puttingFlagMode) {
                 tmp = gameController.openCell(tmpX, tmpY);
             } else {
-                gameController.makeFlagOnFieldOpposite(tmpX, tmpY);
-                flagCount++;
+                if (gameController.makeFlagOnFieldOpposite(tmpX, tmpY)) {
+                    flagCount--;
+                } else {
+                    flagCount++;
+                }
             }
 
-            if ((tmp.equals("Game over")) || ((gameController.checkIsGameEnded()) || (flagCount == 0))) {
+            if ((tmp.equals("Game over")) || ((gameController.checkIsGameEnded()))) {
                 break;
             }
             //System.out.println(tmp);
         }
+        if (gameController.checkIsGameEnded())
+            return -1;
         //in.close();
         return 0;
     }//-1 exit 0 okk 1 new game
 
-    Controller startNewGame() {
-        return new Controller();
+    void startNewGame() {
+        gameController = null;
+        countOfMines = 0;
+        playMinesweeper();
     }
 
     String[] getCycleInput(boolean puttingFlagMode) {
@@ -93,23 +105,29 @@ public class Game {
         System.out.println("Enter opening cell coordinate or command. Or change mode on Open Cell/Put Flag...");
         String tmp = in.nextLine();
         if ((tmp.equals("Open Cell")) && (puttingFlagMode)) {
-            puttingFlagMode = false;
+            this.puttingFlagMode = false;
         } else if ((tmp.equals("Put Flag")) && (!puttingFlagMode)) {
-            puttingFlagMode = true;
+            this.puttingFlagMode = true;
         }
         String[] outputTmp = tmp.split(" ");
         int arrayTmpLength = outputTmp.length;
         String[] output = new String[arrayTmpLength + 1];
         System.arraycopy(outputTmp, 0, output, 0, arrayTmpLength);//for (int i=0;i<arrayTmpLength;i++)output[i]=outputTmp[i];
         output[arrayTmpLength] = tmp;
+        if (tmp.equals("Open Cell") || tmp.equals("Put Flag")) {
+            output = new String[1];
+            output[0] = tmp;
+            System.out.println("Game mode was changed on " + tmp);
+        }
         return output;
     }
 
     void playMinesweeper() {
         getStartingGameInput();
         int flag = gameCycle();
-        if (flag == -1) return;
-        else if (flag == 1) new Game();
+        /*if (flag == -1)*/
+        System.out.println("That's all.");
+        //else if (flag == 1) new Game();
     }
 
 }

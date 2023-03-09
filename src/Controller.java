@@ -6,11 +6,12 @@ public class Controller {
     private Model controllerModel;
     private int countOfMines = 0;
 
-    Controller(int xInputValue, int yInputValue) {
+    Controller(int xInputValue, int yInputValue, int inputCountOfMines) {
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
-        countOfMines = 0;
+        countOfMines = inputCountOfMines;
         controllerModel = new Model(fieldWidth, fieldHeight);
+        controllerModel.setMinesCount(countOfMines);
     }
 
     Controller() {
@@ -21,12 +22,14 @@ public class Controller {
         fieldWidth = Integer.parseInt(input[0]);//in.nextInt();
         fieldHeight = Integer.parseInt(input[1]);//in.nextInt();
         countOfMines = 0;
+        //controllerModel.setMinesCount(0);
         controllerModel = new Model(fieldWidth, fieldHeight);
+        controllerModel.setMinesCount(countOfMines);
         //in.close();
-    }
+    }//надо бы изменить чтобы еще мины вводились
 
     boolean checkIsGameEnded() {
-        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) return true;
+        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) {System.out.println("You won!!!"); return true;}
         else return false;
     }
 
@@ -133,10 +136,22 @@ public class Controller {
         }
     }
 
-    void makeFlagOnFieldOpposite(int inputX, int inputY) {
-        if (controllerModel.getFlag(inputX, inputY)) controllerModel.setFlag(inputX, inputY, false);
-        else controllerModel.setFlag(inputX, inputY, true);
-        printOpenedField();
+
+    /**
+     * @return if unset flag on field returns false and so if the cell was free, set it and return true.
+     */
+    boolean makeFlagOnFieldOpposite(int inputX, int inputY) {
+        if (controllerModel.getFlag(inputX, inputY)) {
+            controllerModel.setFlag(inputX, inputY, false);
+            printOpenedField();
+            controllerModel.setOpenedMinesCount(controllerModel.getOpenedMinesCount() - 1);
+            return false;
+        } else {
+            controllerModel.setFlag(inputX, inputY, true);
+            controllerModel.setOpenedMinesCount(controllerModel.getOpenedMinesCount() + 1);
+            printOpenedField();
+            return true;
+        }
     }
 
     void printFullyOpenedField() {
@@ -170,7 +185,7 @@ public class Controller {
     }
 
     /**
-     * @apiNote output:1)"bad input (x||y) out of range"/2)"bad input cell is already opened"/3)"there was a mine...",4)"Ok".
+     * @return output:1)"bad input (x||y) out of range"/2)"bad input cell is already opened"/3)"there was a mine...",4)"Ok".
      * (1)checkInputXY(x, y); (2)getCellState(x, y); (3)getCellValue(x, y) == -1; (4)setCellState(x, y, true)...else return "Ok";
      */
     String openCell(int x, int y) {
