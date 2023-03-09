@@ -3,9 +3,12 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
-    private Controller gameController;
+    private int fieldWidth;//ширина?
+    private int fieldHeight;
+    private Controller gameController = null;
     private int countOfMines;
-    boolean puttingFlagMode = false;
+    private boolean puttingFlagMode = false;
+    private boolean graphicFlag;
 
     int checkForCommand(String input) {//Exit, About, New Game, High Scores.
         switch (input) {
@@ -46,14 +49,26 @@ public class Game {
         int yInputValue = in.nextInt();
         System.out.println("enter count of mines...");
         countOfMines = in.nextInt();
-        gameController = new Controller(xInputValue, yInputValue, countOfMines);
+        in.nextLine();
+        while (true) {
+            System.out.println("Use graphic? (Y/N)");
+            String tmp = in.nextLine();
+            if (tmp.equals("Y")) {
+                graphicFlag = true;
+                break;
+            } else if (tmp.equals("N")) {
+                graphicFlag = false;
+                break;
+            }
+        }
+        gameController = new Controller(xInputValue, yInputValue, countOfMines, graphicFlag);
         gameController.placeMinesOnField(countOfMines);
         gameController.printFullyOpenedField();/////////
         gameController.printOpenedField();
         //in.close();
     }
 
-    int gameCycle() {
+    int cmdGameCycle() {
         int flagCount = gameController.getFlagsCount();
 
         while (true) {
@@ -124,7 +139,7 @@ public class Game {
 
     void playMinesweeper() {
         getStartingGameInput();
-        int flag = gameCycle();
+        int flag = cmdGameCycle();
         /*if (flag == -1)*/
         System.out.println("That's all.");
         //else if (flag == 1) new Game();

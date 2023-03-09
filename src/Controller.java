@@ -2,16 +2,19 @@ import java.util.Scanner;
 
 public class Controller {
     private int fieldWidth;//ширина?
-    private int fieldHeight = 0;
+    private int fieldHeight;
     private Model controllerModel;
+    private View view;
     private int countOfMines = 0;
+    private boolean graphicFlag;
 
-    Controller(int xInputValue, int yInputValue, int inputCountOfMines) {
+    Controller(int xInputValue, int yInputValue, int inputCountOfMines,boolean inputGraphicFlag) {
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
         countOfMines = inputCountOfMines;
         controllerModel = new Model(fieldWidth, fieldHeight);
         controllerModel.setMinesCount(countOfMines);
+        view=new View(fieldWidth,fieldHeight);
     }
 
     Controller() {
@@ -28,9 +31,19 @@ public class Controller {
         //in.close();
     }//надо бы изменить чтобы еще мины вводились
 
+    int getFieldWidth() {
+        return fieldWidth;
+    }
+
+    int getFieldHeight() {
+        return fieldHeight;
+    }
+
     boolean checkIsGameEnded() {
-        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) {System.out.println("You won!!!"); return true;}
-        else return false;
+        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) {
+            System.out.println("You won!!!");
+            return true;
+        } else return false;
     }
 
     int getFlagsCount() {
