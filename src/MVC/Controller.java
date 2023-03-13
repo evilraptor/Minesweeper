@@ -1,23 +1,31 @@
+package MVC;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Scanner;
 
 public class Controller {
     private int fieldWidth;//ширина?
     private int fieldHeight;
     private Model controllerModel;
-    private View view;
+    private View controllerView;
     private int countOfMines = 0;
     private boolean graphicFlag;
+    private boolean puttingFlagMode = false;
 
-    Controller(int xInputValue, int yInputValue, int inputCountOfMines,boolean inputGraphicFlag) {
+    public Controller(int xInputValue, int yInputValue, int inputCountOfMines, boolean inputGraphicFlag) {
+        inputGraphicFlag = false;
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
         countOfMines = inputCountOfMines;
         controllerModel = new Model(fieldWidth, fieldHeight);
         controllerModel.setMinesCount(countOfMines);
-        view=new View(fieldWidth,fieldHeight);
+        controllerView = new View(fieldWidth, fieldHeight, inputCountOfMines);
     }
 
-    Controller() {
+    public Controller() {
         System.out.println("enter x and y values of the field...");
         Scanner in = new Scanner(System.in);
         String tmp = in.nextLine();
@@ -31,34 +39,34 @@ public class Controller {
         //in.close();
     }//надо бы изменить чтобы еще мины вводились
 
-    int getFieldWidth() {
+    public int getFieldWidth() {
         return fieldWidth;
     }
 
-    int getFieldHeight() {
+    public int getFieldHeight() {
         return fieldHeight;
     }
 
-    boolean checkIsGameEnded() {
+    public boolean checkIsGameEnded() {
         if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) {
             System.out.println("You won!!!");
             return true;
         } else return false;
     }
 
-    int getFlagsCount() {
+    public int getFlagsCount() {
         return controllerModel.getMinesCount();
     }
 
-    void setModel(Model inputModel) {
+    public void setModel(Model inputModel) {
         controllerModel = inputModel;
     }
 
-    boolean checkIsAllMinesOpened() {
+    public boolean checkIsAllMinesOpened() {
         return controllerModel.getOpenedMinesCount() == controllerModel.getMinesCount();
     }
 
-    boolean checkIsAllFieldOpened() {
+    public boolean checkIsAllFieldOpened() {
         for (int i = 0; i < fieldWidth; i++) {
             for (int j = 0; j < fieldHeight; j++) {
                 if ((controllerModel.getCellValue(i, j) != -1) && (!controllerModel.getCellState(i, j))) return false;
@@ -67,7 +75,7 @@ public class Controller {
         return true;
     }
 
-    void placeMinesOnField(int countOfMines) {
+    public void placeMinesOnField(int countOfMines) {
         controllerModel.setMinesCount(countOfMines);
         int mineValue = -1;
         for (int i = 0; i < countOfMines; ) {
@@ -92,7 +100,7 @@ public class Controller {
         }
     }
 
-    void placeCountsOfCloseMines() {
+    public void placeCountsOfCloseMines() {
         for (int tmpY = 0; tmpY < fieldHeight; tmpY++) {
             for (int tmpX = 0; tmpX < fieldWidth; tmpX++) {
                 if (controllerModel.getCellValue(tmpX, tmpY) != -1) {
@@ -107,7 +115,7 @@ public class Controller {
         }
     }
 
-    void openCloseCells(int inputX, int inputY) {
+    public void openCloseCells(int inputX, int inputY) {
         if (controllerModel.getCellValue(inputX, inputY) != 0) {
             return;
         } else {
@@ -149,11 +157,10 @@ public class Controller {
         }
     }
 
-
     /**
      * @return if unset flag on field returns false and so if the cell was free, set it and return true.
      */
-    boolean makeFlagOnFieldOpposite(int inputX, int inputY) {
+    public boolean makeFlagOnFieldOpposite(int inputX, int inputY) {
         if (controllerModel.getFlag(inputX, inputY)) {
             controllerModel.setFlag(inputX, inputY, false);
             printOpenedField();
@@ -167,7 +174,7 @@ public class Controller {
         }
     }
 
-    void printFullyOpenedField() {
+    public void printFullyOpenedField() {
         for (int y = 0; y < fieldHeight; y++) {
             for (int x = 0; x < fieldWidth; x++) {
                 int tmp = controllerModel.getCellValue(x, y);
@@ -179,7 +186,7 @@ public class Controller {
         }
     }
 
-    void printOpenedField() {
+    public void printOpenedField() {
         for (int y = 0; y < fieldHeight; y++) {
             for (int x = 0; x < fieldWidth; x++) {
                 if (controllerModel.getCellState(x, y)) {
@@ -201,7 +208,7 @@ public class Controller {
      * @return output:1)"bad input (x||y) out of range"/2)"bad input cell is already opened"/3)"there was a mine...",4)"Ok".
      * (1)checkInputXY(x, y); (2)getCellState(x, y); (3)getCellValue(x, y) == -1; (4)setCellState(x, y, true)...else return "Ok";
      */
-    String openCell(int x, int y) {
+    public String openCell(int x, int y) {
         if (!controllerModel.checkInputXY(x, y)) {
             System.out.println("bad input (x||y) out of range");
             return "bad input (x||y) out of range";
@@ -211,8 +218,8 @@ public class Controller {
             return "bad input cell is opened";
         }
         if (controllerModel.getCellValue(x, y) == -1) {
-            System.out.println("there was a mine...\nGame over");
-            return "Game over";
+            System.out.println("there was a mine...\nMajor.Game over");
+            return "Major.Game over";
         } else {
             controllerModel.setCellState(x, y, true);
             openCloseCells(x, y);
@@ -220,8 +227,66 @@ public class Controller {
             return "Ok";
         }
     }
+    //TODO переписать с учетом графики юпд написать просто новые функции
 
-    String openCell() {//для графической поменять потом
-        return "b";
-    }//для графики наверное
+    public void setMouseListenerOnCells() {
+        ImageIcon[] containerOfIcons = new ImageIcon[11];//0-8 это цифры 9 флаг 10 мина
+        //ImageIcon zeroIcon = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\zero.png");
+        containerOfIcons[0] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\0.png");
+        containerOfIcons[1] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\1.png");
+        containerOfIcons[2] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\2.png");
+        containerOfIcons[3] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\3.png");
+        containerOfIcons[4] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\4.png");
+        containerOfIcons[5] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\5.png");
+        containerOfIcons[6] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\6.png");
+        containerOfIcons[7] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\7.png");
+        containerOfIcons[8] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\8.png");
+        containerOfIcons[9] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\Flag.png");
+        containerOfIcons[10] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\Mine.png");
+
+        for (int i = 0; i < fieldWidth; i++) {
+            for (int j = 0; j < fieldHeight; j++) {
+                //controllerView.cells[i][j].setIcon();
+                controllerView.cells[i][j].addMouseListener(new MouseListener() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+
+                        if (!puttingFlagMode) {
+                            int xPoint = (int) e.getLocationOnScreen().getX() / 100;
+                            int yPoint = (int) e.getLocationOnScreen().getY() / 100 - 1;
+                            System.out.println(xPoint + " " + yPoint);
+                            if (openCell(xPoint, yPoint) == "Major.Game over")
+                                controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[10]);
+                            else //if ((openCell(xPoint, yPoint) == "Ok")||(openCell(xPoint, yPoint) == "bad input cell is already opened")) {
+                            {
+                                int iconNum = controllerModel.getCellValue(xPoint, yPoint);
+//System.out.println("aaaaa");
+                                controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[iconNum]);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseReleased(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+
+                    }
+                });
+            }
+        }
+    }
 }

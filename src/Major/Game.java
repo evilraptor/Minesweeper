@@ -1,8 +1,13 @@
+package Major;
+
+import MVC.Controller;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
+    //TODO а может если делать нечего сделать считывание по графике входного сразу
     private int fieldWidth;//ширина?
     private int fieldHeight;
     private Controller gameController = null;
@@ -10,16 +15,16 @@ public class Game {
     private boolean puttingFlagMode = false;
     private boolean graphicFlag;
 
-    int checkForCommand(String input) {//Exit, About, New Game, High Scores.
+    int checkForCommand(String input) {//Exit, About, New Major.Game, High Scores.
         switch (input) {
             case "Exit" -> {
                 return -1;
             }
             case "About" -> {
-                System.out.println("Commands: Exit, About, New Game, High Scores, Put Flags, Open Cell.");
+                System.out.println("Commands: Exit, About, New Major.Game, High Scores, Put Flags, Open Cell.");
                 return 0;
             }
-            case "New Game" -> {
+            case "New Major.Game" -> {
                 startNewGame();
                 return 1;
             }
@@ -61,10 +66,11 @@ public class Game {
                 break;
             }
         }
-        gameController = new Controller(xInputValue, yInputValue, countOfMines, graphicFlag);
+        gameController = new Controller(xInputValue, yInputValue, countOfMines,graphicFlag);
         gameController.placeMinesOnField(countOfMines);
         gameController.printFullyOpenedField();/////////
         gameController.printOpenedField();
+        if(graphicFlag)gameController.setMouseListenerOnCells();
         //in.close();
     }
 
@@ -95,7 +101,7 @@ public class Game {
                 }
             }
 
-            if ((tmp.equals("Game over")) || ((gameController.checkIsGameEnded()))) {
+            if ((tmp.equals("Major.Game over")) || ((gameController.checkIsGameEnded()))) {
                 break;
             }
             //System.out.println(tmp);
@@ -132,7 +138,7 @@ public class Game {
         if (tmp.equals("Open Cell") || tmp.equals("Put Flag")) {
             output = new String[1];
             output[0] = tmp;
-            System.out.println("Game mode was changed on " + tmp);
+            System.out.println("Major.Game mode was changed on " + tmp);
         }
         return output;
     }
@@ -142,7 +148,7 @@ public class Game {
         int flag = cmdGameCycle();
         /*if (flag == -1)*/
         System.out.println("That's all.");
-        //else if (flag == 1) new Game();
+        //else if (flag == 1) new Major.Game();
     }
 
 }

@@ -1,3 +1,5 @@
+package MVC;
+
 public class Model {
     private int[][] playingField;
     private boolean[][] openedPlayingField;//false default
@@ -7,7 +9,7 @@ public class Model {
     private int minesCount = 0;
     private int openedMinesCount = 0;
 
-    Model(int x, int y) {
+    public Model(int x, int y) {
         fieldWidth = x;
         fieldHeight = y;
         playingField = new int[fieldHeight][fieldWidth];
@@ -15,48 +17,48 @@ public class Model {
         flaggedCells = new boolean[fieldHeight][fieldWidth];
     }
 
-    Model() {
+    public Model() {
         fieldWidth = 0;
         fieldHeight = 0;
     }
 
-    void setOpenedMinesCount(int input) {
+    public void setOpenedMinesCount(int input) {
         openedMinesCount = input;
     }
 
-    int getOpenedMinesCount() {
+    public int getOpenedMinesCount() {
         return openedMinesCount;
     }
 
-    void setMinesCount(int inputMinesCount) {
+    public void setMinesCount(int inputMinesCount) {
         minesCount = inputMinesCount;
     }
 
-    int getMinesCount() {
+    public int getMinesCount() {
         return minesCount;
     }
 
-    boolean checkInputXY(int x, int y) {
+    public boolean checkInputXY(int x, int y) {
         return ((x < fieldWidth) && (y < fieldHeight)) && ((x >= 0) && (y >= 0));
     }
 
-    int getFieldWidth() {
+    public int getFieldWidth() {
         return fieldWidth;
     }
 
-    void setFieldWidth(int x) {
+    public void setFieldWidth(int x) {
         fieldWidth = x;
     }
 
-    int getFieldHeight() {
+    public int getFieldHeight() {
         return fieldHeight;
     }
 
-    void setFieldHeight(int y) {
+    public void setFieldHeight(int y) {
         fieldHeight = y;
     }
 
-    void setCellValue(int x, int y, int value) {
+    public void setCellValue(int x, int y, int value) {
         try {
             playingField[y][x] = value;
         } catch (IndexOutOfBoundsException e) {
@@ -64,7 +66,7 @@ public class Model {
         }
     }
 
-    int getCellValue(int x, int y) {
+    public int getCellValue(int x, int y) {
         int tmp;
         try {
             tmp = playingField[y][x];//первые скобки берем какая строка т.е. у и тд
@@ -74,24 +76,24 @@ public class Model {
         return tmp;
     }
 
-    void setCellState(int x, int y, boolean f) {
+    public void setCellState(int x, int y, boolean f) {
         if (checkInputXY(x, y)) {
             openedPlayingField[y][x] = f;
         }
     }
 
-    boolean getCellState(int x, int y) {
+    public boolean getCellState(int x, int y) {
         if (checkInputXY(x, y)) {
             return openedPlayingField[y][x];
         } else
             return false;
     }
 
-    void setFlag(int x, int y, boolean mode) {
+    public void setFlag(int x, int y, boolean mode) {
         flaggedCells[y][x] = mode;
     }
 
-    boolean getFlag(int x, int y) {
+    public boolean getFlag(int x, int y) {
         return flaggedCells[y][x];
     }
 }
