@@ -17,11 +17,6 @@ public class Model {
         flaggedCells = new boolean[fieldHeight][fieldWidth];
     }
 
-    public Model() {
-        fieldWidth = 0;
-        fieldHeight = 0;
-    }
-
     public void setOpenedMinesCount(int input) {
         openedMinesCount = input;
     }

@@ -1,7 +1,6 @@
 package MVC;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Scanner;
@@ -11,18 +10,24 @@ public class Controller {
     private int fieldHeight;
     private Model controllerModel;
     private View controllerView;
-    private int countOfMines = 0;
-    private boolean graphicFlag;
-    private boolean puttingFlagMode = false;
+    private int countOfMines;
+    private boolean puttingFlagMode;
+    private boolean enableButtons = true;
+    private ImageIcon[] containerOfIcons;//0-8 это цифры 9 флаг 10 мина
 
     public Controller(int xInputValue, int yInputValue, int inputCountOfMines, boolean inputGraphicFlag) {
-        inputGraphicFlag = false;
         fieldWidth = xInputValue;
         fieldHeight = yInputValue;
         countOfMines = inputCountOfMines;
         controllerModel = new Model(fieldWidth, fieldHeight);
         controllerModel.setMinesCount(countOfMines);
-        controllerView = new View(fieldWidth, fieldHeight, inputCountOfMines);
+        if (inputGraphicFlag) {
+            controllerView = new View(fieldWidth, fieldHeight, inputCountOfMines);
+            containerOfIcons = controllerView.getContainerOfIcons();
+            setMouseListenerOnCells();
+            controllerView.createFlagButton();
+            setMouseListenerOnFlagButton();
+        }
     }
 
     public Controller() {
@@ -48,7 +53,7 @@ public class Controller {
     }
 
     public boolean checkIsGameEnded() {
-        if (checkIsAllFieldOpened() && checkIsAllMinesOpened()) {
+        if (checkIsAllFieldOpened() && checkIsAllMinesFlagged()) {
             System.out.println("You won!!!");
             return true;
         } else return false;
@@ -62,8 +67,17 @@ public class Controller {
         controllerModel = inputModel;
     }
 
-    public boolean checkIsAllMinesOpened() {
+    public boolean checkIsAllMinesFlagged() {
         return controllerModel.getOpenedMinesCount() == controllerModel.getMinesCount();
+    }
+
+    public boolean checkIsAnyMineTouched() {
+        for (int i = 0; i < fieldWidth; i++) {
+            for (int j = 0; j < fieldHeight; j++) {
+                if ((controllerModel.getCellValue(i, j) == -1) && (controllerModel.getCellState(i, j))) return true;
+            }
+        }
+        return false;
     }
 
     public boolean checkIsAllFieldOpened() {
@@ -116,9 +130,7 @@ public class Controller {
     }
 
     public void openCloseCells(int inputX, int inputY) {
-        if (controllerModel.getCellValue(inputX, inputY) != 0) {
-            return;
-        } else {
+        if (controllerModel.getCellValue(inputX, inputY) == 0) {
             for (int i = 0; i < (fieldHeight + fieldWidth) / 2; i++) {
                 for (int tmpY = 0; tmpY < fieldHeight; tmpY++) {
                     for (int tmpX = 0; tmpX < fieldWidth; tmpX++) {
@@ -218,8 +230,9 @@ public class Controller {
             return "bad input cell is opened";
         }
         if (controllerModel.getCellValue(x, y) == -1) {
-            System.out.println("there was a mine...\nMajor.Game over");
-            return "Major.Game over";
+            controllerModel.setCellState(x, y, true);
+            System.out.println("there was a mine...\nGame over");
+            return "Game over";
         } else {
             controllerModel.setCellState(x, y, true);
             openCloseCells(x, y);
@@ -230,38 +243,36 @@ public class Controller {
     //TODO переписать с учетом графики юпд написать просто новые функции
 
     public void setMouseListenerOnCells() {
-        ImageIcon[] containerOfIcons = new ImageIcon[11];//0-8 это цифры 9 флаг 10 мина
-        //ImageIcon zeroIcon = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\zero.png");
-        containerOfIcons[0] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\0.png");
-        containerOfIcons[1] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\1.png");
-        containerOfIcons[2] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\2.png");
-        containerOfIcons[3] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\3.png");
-        containerOfIcons[4] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\4.png");
-        containerOfIcons[5] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\5.png");
-        containerOfIcons[6] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\6.png");
-        containerOfIcons[7] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\7.png");
-        containerOfIcons[8] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\8.png");
-        containerOfIcons[9] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\Flag.png");
-        containerOfIcons[10] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\Mine.png");
-
         for (int i = 0; i < fieldWidth; i++) {
             for (int j = 0; j < fieldHeight; j++) {
                 //controllerView.cells[i][j].setIcon();
                 controllerView.cells[i][j].addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-
-                        if (!puttingFlagMode) {
-                            int xPoint = (int) e.getLocationOnScreen().getX() / 100;
-                            int yPoint = (int) e.getLocationOnScreen().getY() / 100 - 1;
-                            System.out.println(xPoint + " " + yPoint);
-                            if (openCell(xPoint, yPoint) == "Major.Game over")
-                                controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[10]);
-                            else //if ((openCell(xPoint, yPoint) == "Ok")||(openCell(xPoint, yPoint) == "bad input cell is already opened")) {
-                            {
-                                int iconNum = controllerModel.getCellValue(xPoint, yPoint);
-//System.out.println("aaaaa");
-                                controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[iconNum]);
+//TODO у возможно считается от низа подумать как переписать может размер окна это поле+справа немного и тогда все известно
+                        if (enableButtons) {
+                            if (!puttingFlagMode) {
+                                double xCoordinate = e.getLocationOnScreen().getX();
+                                double yCoordinate = e.getLocationOnScreen().getY();
+                                System.out.println("in coordinates " + xCoordinate + " " + yCoordinate);
+                                int xPoint = (int) (e.getLocationOnScreen().getX() / 100.0);
+                                int yPoint = (int) ((e.getLocationOnScreen().getY() - 30) / 100.0);
+                                System.out.println("in points " + xPoint + " " + yPoint);
+                                if (openCell(xPoint, yPoint).equals("Game over"))
+                                    controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[10]);
+                                else //if ((openCell(xPoint, yPoint) == "Ok"))//||(openCell(xPoint, yPoint) == "bad input cell is already opened")) {
+                                {
+                                    controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[controllerModel.getCellValue(xPoint, yPoint)]);
+                                    for (int i = 0; i < fieldWidth; i++) {
+                                        for (int j = 0; j < fieldHeight; j++) {
+                                            //System.out.println("a");
+                                            if (controllerModel.getCellState(i, j)) {
+                                                //System.out.println("b");
+                                                controllerView.cells[i][j].setIcon(containerOfIcons[controllerModel.getCellValue(i, j)]);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -287,6 +298,49 @@ public class Controller {
                     }
                 });
             }
+
+
         }
+    }
+
+    public void setMouseListenerOnFlagButton() {
+        controllerView.flagButton.doClick();
+        controllerView.flagButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                if (puttingFlagMode) {
+                    controllerView.flagButton.setIcon(containerOfIcons[11]);
+                    puttingFlagMode = false;
+                } else {
+                    controllerView.flagButton.setIcon(containerOfIcons[9]);
+                    puttingFlagMode = true;
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+    }
+
+    public void stopGraphicInput() {
+        enableButtons = false;
     }
 }
