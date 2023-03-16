@@ -4,6 +4,7 @@ import MVC.Controller;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Game {
@@ -14,40 +15,33 @@ public class Game {
     private boolean puttingFlagMode;
     private boolean graphicFlag;
 
-    int checkForCommand(String input) {//Exit, About, New Game, High Scores.
+    int checkForCommand(String input) throws IOException {//Exit, About, New Game, High Scores.
         switch (input) {
             case "Exit" -> {
                 return -1;
             }
             case "About" -> {
                 System.out.println("Commands: Exit, About, New Game, High Scores, Put Flags, Open Cell.");
-                return 0;
+                return 2;
             }
             case "New Game" -> {
                 startNewGame();
                 return 1;
             }
             case "High Scores" -> {
-                //FileWriter writer = new FileWriter("notes3.txt", true); запись с добавлением
-                try (FileReader reader = new FileReader("Leaderboard.txt")) {
-                    // читаем посимвольно
-                    int c;
-                    while ((c = reader.read()) != -1) {
-                        System.out.print((char) c);
-                    }
-                } catch (IOException ex) {
-                    System.out.println(ex.getMessage());
-                }
-                return 0;
+                printBestScores();
+                return 2;
             }
             default -> {
                 return 0;
             }
         }
-    }//-1 exit 0 okk 1 new game
+    }//-1 exit 0 okk 1 new game 2 again
 
-    void getStartingGameInput() {
+    String getStartingGameInput() {
         Scanner in = new Scanner(System.in);
+        System.out.println("Your name: ");
+        String name = in.nextLine();
         System.out.println("enter x and y values of the field...");
         int xInputValue = in.nextInt();
         int yInputValue = in.nextInt();
@@ -69,11 +63,12 @@ public class Game {
         gameController.placeMinesOnField(countOfMines);
         gameController.printFullyOpenedField();/////////
         gameController.printOpenedField();
+        return name;
         //in.close();
     }
 
     //TODO дописать под графику игровой цикл без этого цикл не видит вход
-    int cmdGameCycle() {
+    int cmdGameCycle() throws IOException {
         int flagCount = gameController.getFlagsCount();
 
         while (true) {
@@ -84,14 +79,15 @@ public class Game {
                 while (input.length == 1) {
                     input = getCycleInput(puttingFlagMode);
                     flag = checkForCommand(input[input.length - 1]);
-                    if (flag != 0) return flag;
+                    if ((flag != 0) || (flag != 2)) return flag;
                 }
-
+//TODO дописать про команды всякие
                 //String tmp;// = Arrays.toString(input);
                 int tmpX = Integer.parseInt(input[0]);//in.nextInt();
                 int tmpY = Integer.parseInt(input[1]);//in.nextInt();
                 if (!puttingFlagMode) {
-                    /*tmp = */gameController.openCell(tmpX, tmpY);
+                    /*tmp = */
+                    gameController.openCell(tmpX, tmpY);
                 } else {
                     if (gameController.makeFlagOnFieldOpposite(tmpX, tmpY)) {
                         flagCount--;
@@ -116,7 +112,7 @@ public class Game {
         return 0;
     }//-1 exit 0 okk 1 new game
 
-    void startNewGame() {
+    void startNewGame() throws IOException {
         gameController = null;
         countOfMines = 0;
         playMinesweeper();
@@ -147,16 +143,50 @@ public class Game {
         return output;
     }
 
-    void playMinesweeper() {
-        getStartingGameInput();
+    void playMinesweeper() throws IOException {
+        String name = getStartingGameInput();
+        long startTime = System.nanoTime();
         int flag = cmdGameCycle();
-        if(graphicFlag)endGameWithGraphic();
+        Date end = new Date();
+        long endTime = System.nanoTime();
+        if (graphicFlag) endGameWithGraphic();
         /*if (flag == -1)*/
         System.out.println("That's all.");
+        double deltaTime = (double) (endTime - startTime) / 1000000 / 1000;
+        System.out.println("Time: " + deltaTime);
+        writeResultToLeaderBoard(name, deltaTime);
         //else if (flag == 1) new Game();
     }
 
     void endGameWithGraphic() {
         gameController.stopGraphicInput();
+    }
+
+    void writeResultToLeaderBoard(String name, double deltaTime) throws IOException {
+        File file = new File("LeaderBoard.txt");
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(file, true);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            fileOutputStream.write((name + " " + deltaTime).getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        fileOutputStream.close();
+    }
+
+    void printBestScores() throws IOException {
+        FileInputStream fileInputStream = new FileInputStream("LeaderBoard.txt");
+
+        int i;
+
+        while ((i = fileInputStream.read()) != -1) {
+
+            System.out.print((char) i);
+        }
     }
 }
