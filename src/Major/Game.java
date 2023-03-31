@@ -32,6 +32,10 @@ public class Game {
                 printBestScores();
                 return 2;
             }
+            case "Clear leaderboard"->{
+                clearBestScores();
+                return 2;
+            }
             default -> {
                 return 0;
             }
@@ -86,7 +90,6 @@ public class Game {
                 int tmpX = Integer.parseInt(input[0]);//in.nextInt();
                 int tmpY = Integer.parseInt(input[1]);//in.nextInt();
                 if (!puttingFlagMode) {
-                    /*tmp = */
                     gameController.openCell(tmpX, tmpY);
                 } else {
                     if (gameController.makeFlagOnFieldOpposite(tmpX, tmpY)) {
@@ -95,19 +98,15 @@ public class Game {
                         flagCount++;
                     }
                 }
-
                 if ((gameController.checkIsAnyMineTouched()) || ((gameController.checkIsGameEnded()))) {
-                    break;
+                    return -1;
                 }
             } else {
-                if ((gameController.checkIsGameEnded()) || (gameController.checkIsAnyMineTouched())) break;
+                if ((gameController.checkIsGameEnded()) || (gameController.checkIsAnyMineTouched())) return -1;
             }
-
-
-            //System.out.println(tmp);
+            if (gameController.checkIsGameEnded())
+                break;//return -1;
         }
-        if (gameController.checkIsGameEnded())
-            return -1;
         //in.close();
         return 0;
     }//-1 exit 0 okk 1 new game
@@ -154,7 +153,7 @@ public class Game {
         System.out.println("That's all.");
         double deltaTime = (double) (endTime - startTime) / 1000000 / 1000;
         System.out.println("Time: " + deltaTime);
-        writeResultToLeaderBoard(name, deltaTime);
+        if (flag == 0) writeResultToLeaderBoard(name, deltaTime);
         //else if (flag == 1) new Game();
     }
 
@@ -172,7 +171,7 @@ public class Game {
         }
 
         try {
-            fileOutputStream.write((name + " " + deltaTime).getBytes());
+            fileOutputStream.write((name + " " + deltaTime + "\n").getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -181,12 +180,15 @@ public class Game {
 
     void printBestScores() throws IOException {
         FileInputStream fileInputStream = new FileInputStream("LeaderBoard.txt");
-
         int i;
-
+        System.out.println("LeaderBoard:\n");
         while ((i = fileInputStream.read()) != -1) {
-
             System.out.print((char) i);
         }
+    }
+
+    void clearBestScores() throws FileNotFoundException {
+        FileInputStream fileInputStream=new FileInputStream("LeaderBoard.txt");
+        System.out.println("LeaderBoard:\n");
     }
 }

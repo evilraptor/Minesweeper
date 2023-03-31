@@ -251,13 +251,14 @@ public class Controller {
                     public void mouseClicked(MouseEvent e) {
 //TODO у возможно считается от низа подумать как переписать может размер окна это поле+справа немного и тогда все известно
                         if (enableButtons) {
+                            int xPoint = (int) (e.getLocationOnScreen().getX() / 100.0);
+                            int yPoint = (int) ((e.getLocationOnScreen().getY() - 30) / 100.0);
+                            System.out.println("in points " + xPoint + " " + yPoint);
+
                             if (!puttingFlagMode) {
-                                double xCoordinate = e.getLocationOnScreen().getX();
-                                double yCoordinate = e.getLocationOnScreen().getY();
-                                System.out.println("in coordinates " + xCoordinate + " " + yCoordinate);
-                                int xPoint = (int) (e.getLocationOnScreen().getX() / 100.0);
-                                int yPoint = (int) ((e.getLocationOnScreen().getY() - 30) / 100.0);
-                                System.out.println("in points " + xPoint + " " + yPoint);
+                                //double xCoordinate = e.getLocationOnScreen().getX();
+                                //double yCoordinate = e.getLocationOnScreen().getY();
+                                //System.out.println("in coordinates " + xCoordinate + " " + yCoordinate);
                                 if (openCell(xPoint, yPoint).equals("Game over"))
                                     controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[10]);
                                 else //if ((openCell(xPoint, yPoint) == "Ok"))//||(openCell(xPoint, yPoint) == "bad input cell is already opened")) {
@@ -272,6 +273,18 @@ public class Controller {
                                             }
                                         }
                                     }
+                                }
+                            } else {
+                                if (!controllerModel.getFlag(xPoint, yPoint)) {
+                                    controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[9]);
+                                    controllerModel.setFlag(xPoint, yPoint, true);
+                                    if (controllerModel.getCellValue(xPoint, yPoint) == -1)
+                                        controllerModel.setOpenedMinesCount(controllerModel.getOpenedMinesCount() + 1);
+                                } else {
+                                    controllerView.cells[xPoint][yPoint].setIcon(null);
+                                    controllerModel.setFlag(xPoint, yPoint, false);
+                                    if (controllerModel.getCellValue(xPoint, yPoint) == -1)
+                                        controllerModel.setOpenedMinesCount(controllerModel.getOpenedMinesCount() - 1);
                                 }
                             }
                         }
