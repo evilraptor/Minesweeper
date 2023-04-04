@@ -16,7 +16,7 @@ public class Model {
         openedPlayingField = new boolean[fieldHeight][fieldWidth];
         flaggedCells = new boolean[fieldHeight][fieldWidth];
     }
-
+//B
     public void setOpenedMinesCount(int input) {
         openedMinesCount = input;
     }
