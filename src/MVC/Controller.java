@@ -1,6 +1,7 @@
 package MVC;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Scanner;
@@ -249,16 +250,13 @@ public class Controller {
                 controllerView.cells[i][j].addMouseListener(new MouseListener() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-//TODO у возможно считается от низа подумать как переписать может размер окна это поле+справа немного и тогда все известно
                         if (enableButtons) {
-                            int xPoint = (int) (e.getLocationOnScreen().getX() / 100.0);
-                            int yPoint = (int) ((e.getLocationOnScreen().getY() - 30) / 100.0);
+                            Point windowPoint = controllerView.getWindowPoint();
+                            int xPoint = (int) ((e.getLocationOnScreen().getX() - windowPoint.getX()) / 100.0);
+                            int yPoint = (int) ((e.getLocationOnScreen().getY() - 30 - windowPoint.getY()) / 100.0);
                             System.out.println("in points " + xPoint + " " + yPoint);
 
                             if (!puttingFlagMode) {
-                                //double xCoordinate = e.getLocationOnScreen().getX();
-                                //double yCoordinate = e.getLocationOnScreen().getY();
-                                //System.out.println("in coordinates " + xCoordinate + " " + yCoordinate);
                                 if (openCell(xPoint, yPoint).equals("Game over"))
                                     controllerView.cells[xPoint][yPoint].setIcon(containerOfIcons[10]);
                                 else //if ((openCell(xPoint, yPoint) == "Ok"))//||(openCell(xPoint, yPoint) == "bad input cell is already opened")) {
