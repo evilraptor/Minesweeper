@@ -2,6 +2,7 @@ package MVC;
 //TODO учесть везде что когда мы берем координату он скрин есть еще и плашка сверху размером 30пх
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -60,7 +61,9 @@ public class View {
     ImageIcon[] getContainerOfIcons() {
         return containerOfIcons;
     }
-
+Point getWindowPoint(){
+    return frame.getLocation();
+}
     void createFlagButton() {
         flagButton = new JButton();
         flagButton.setBounds((fieldWidth + 1) * 100, 50, 70, 70);
