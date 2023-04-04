@@ -216,7 +216,7 @@ public class Controller {
             System.out.print("\n");
         }
     }
-
+//A
     /**
      * @return output:1)"bad input (x||y) out of range"/2)"bad input cell is already opened"/3)"there was a mine...",4)"Ok".
      * (1)checkInputXY(x, y); (2)getCellState(x, y); (3)getCellValue(x, y) == -1; (4)setCellState(x, y, true)...else return "Ok";

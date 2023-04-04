@@ -42,7 +42,7 @@ public class View {
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
-
+//C
     void createContainerOfIcons() {
         containerOfIcons[0] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\0.png");
         containerOfIcons[1] = new ImageIcon("C:\\Users\\EvilRaptor\\IdeaProjects\\Minesweeper\\src\\Icons\\1.png");
